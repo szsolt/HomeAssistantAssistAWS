@@ -358,7 +358,7 @@ def process_conversation(query):
             else:
                 logger.debug("Returning plain text response with improvements")
                 return improve_response(speech)
-        elif (contenttype == "text/html") and int(response.status_code, 0) >= 400:
+        elif (contenttype == "text/html") and response.status_code >= 400:
             errorMatch = re.search(r'<title>(.*?)</title>', response.text, re.IGNORECASE)
             
             if errorMatch:
@@ -368,7 +368,7 @@ def process_conversation(query):
                 logger.error(f"HTTP error {response.status_code}: Unable to connect to your Home Assistant server. \n {response.text}")
                 
             return pick_random_phrase("alexa_speak_error")
-        elif  (contenttype == "text/plain") and int(response.status_code, 0) >= 400:
+        elif  (contenttype == "text/plain") and response.status_code >= 400:
             logger.error(f"Error processing request: {response.text}")
             return pick_random_phrase("alexa_speak_error")
         else:
