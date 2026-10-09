@@ -78,6 +78,7 @@ home_assistant_room_recognition = str(os.environ.get('home_assistant_room_recogn
 home_assistant_kioskmode = str(os.environ.get('home_assistant_kioskmode', 'False')).lower()
 ask_for_further_commands = str(os.environ.get('ask_for_further_commands', 'False')).lower()
 suppress_greeting = str(os.environ.get('suppress_greeting', 'False')).lower()
+open_dashboard_on_launch = str(os.environ.get('open_dashboard_on_launch', 'False')).lower()
 enable_acknowledgment_sound = str(os.environ.get('enable_acknowledgment_sound', 'False')).lower()
 
 # Helper: fetch text input via webhook
@@ -141,6 +142,11 @@ class LaunchRequestHandler(AbstractRequestHandler):
         device = handler_input.request_envelope.context.system.device
         is_apl_supported = device.supported_interfaces.alexa_presentation_apl is not None
         logger.debug("Device: " + repr(device))
+
+        # Opens the dashboard right away instead of the page with the button
+        if is_apl_supported and open_dashboard_on_launch == "true":
+            open_page(handler_input)
+            return handler_input.response_builder.speak(globals().get("alexa_speak_open_dashboard")).response
         
         # Renders the APL document with the button to open HA (if the device has a screen)
         if is_apl_supported:
